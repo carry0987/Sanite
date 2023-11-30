@@ -7,12 +7,14 @@ use PDO;
 class Sanite
 {
     private $connectdb = null;
+    private static $version;
 
     public function __construct(string $db_host, string $db_name, string $username, string $password, string $charset = 'utf8mb4', int $db_port = 3306)
     {
         try {
             $this->connectdb = new PDO(self::buildDSN('mysql', $db_host, $db_name, $charset, $db_port), $username, $password);
             $this->connectdb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            self::$version = $this->connectdb->getAttribute(PDO::ATTR_SERVER_VERSION);
         } catch (\PDOException $e) {
             throw new DatabaseException($e->getMessage(), $e->getCode());
         }
