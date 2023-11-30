@@ -8,7 +8,7 @@ class Sanite
 {
     private $connectdb = null;
 
-    public function __construct(string $username, string $password, string $db_host, string $db_name, string $charset = 'utf8mb4', int $db_port = 3306)
+    public function __construct(string $db_host, string $db_name, string $username, string $password, string $charset = 'utf8mb4', int $db_port = 3306)
     {
         try {
             $this->connectdb = new PDO(self::buildDSN('mysql', $db_host, $db_name, $charset, $db_port), $username, $password);

@@ -12,7 +12,7 @@ $db_charset = 'utf8mb4';
 $db_port = 3306;
 
 try {
-    $sanite = new Sanite($db_user, $db_password, $db_host, $db_name, $db_charset, $db_port);
+    $sanite = new Sanite($db_host, $db_name, $db_user, $db_password, $db_charset, $db_port);
     $userModel = new UserModel($sanite);
     $user = $userModel->getUserById(1);
     echo '<pre>';
