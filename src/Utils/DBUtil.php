@@ -10,7 +10,8 @@ class DBUtil
     {
         if (!is_array($values)) {
             if (strlen($format_str) !== 1) throw new UtilsException('Quantity Mismatch');
-            return self::getParamType($format_str, $values);
+            $type = self::getParamType($format_str, $values);
+            return array($type);
         }
         $formats = str_split($format_str);
         if (count($formats) != count($values)) {
