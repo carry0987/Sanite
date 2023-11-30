@@ -11,6 +11,7 @@ class DBUtil
         if (!is_array($values)) {
             if (strlen($format_str) !== 1) throw new UtilsException('Quantity Mismatch');
             $type = self::getParamType($format_str, $values);
+            $values = array($values);
             return array($type);
         }
         $formats = str_split($format_str);
