@@ -18,11 +18,11 @@ abstract class DataReadModel implements DataReadInterface
     /**
      *  Get single row of data
      *  @param array $queryArray
-     *  @param array $dataArray
+     *  @param array|null $dataArray
      *  
      *  @return array
     */
-    public function getSingleData(array $queryArray, array $dataArray)
+    public function getSingleData(array $queryArray, array|null $dataArray = null)
     {
         $result = false;
         try {
@@ -47,11 +47,11 @@ abstract class DataReadModel implements DataReadInterface
     /**
      *  Get multiple row of data
      *  @param array $queryArray
-     *  @param array $dataArray
+     *  @param array|null $dataArray
      *  
      *  @return array
     */
-    public function getMultipleData(array $queryArray, array $dataArray)
+    public function getMultipleData(array $queryArray, array|null $dataArray = null)
     {
         $result = array();
         try {
@@ -75,11 +75,11 @@ abstract class DataReadModel implements DataReadInterface
     /**
      *  Get total row of data
      *  @param array $queryArray
-     *  @param array $dataArray
+     *  @param array|null $dataArray
      *
      *  @return int
     */
-    public function getDataCount(array $queryArray, array $dataArray)
+    public function getDataCount(array $queryArray, array|null $dataArray = null)
     {
         $result = false;
         try {

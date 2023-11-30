@@ -27,7 +27,7 @@ $db_charset = 'utf8mb4'; // Optional
 $db_port = 3306; // Optional
 
 // Create a database connection
-$sanite = new Sanite($db_user, $db_password, $db_host, $db_name, $db_charset, $db_port);
+$sanite = new Sanite($db_host, $db_name, $db_user, $db_password, $db_charset, $db_port);
 ```
 
 ## Using a Data Model
@@ -56,6 +56,15 @@ class UserModel extends DataReadModel
 
         return $this->getSingleData($queryArray, $dataArray);
     }
+
+    public function getAllUsers()
+    {
+        $queryArray = [
+            'query' => 'SELECT * FROM user'
+        ];
+
+        return $this->getMultipleData($queryArray);
+    }
 }
 ```
 
@@ -69,8 +78,10 @@ $userModel = new UserModel($sanite);
 
 // Retrieve user information for user with ID 1
 $user = $userModel->getUserById(1);
+$users = $userModel->getAllUsers();
 
 print_r($user);
+print_r($users);
 ```
 
 ## Exception Handling
