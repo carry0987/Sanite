@@ -3,10 +3,10 @@
     "description": "A PHP library that provide base CRUD structure and methods, using PDO.",
     "type": "library",
     "require": {
-        "php": ">=7.2"
+        "php": ">=8.0"
     },
     "require-dev": {
-        "php": ">=7.2"
+        "php": ">=8.0"
     },
     "license": "MIT",
     "autoload": {
