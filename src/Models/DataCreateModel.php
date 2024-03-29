@@ -68,7 +68,10 @@ abstract class DataCreateModel implements DataCreateInterface
             }
             $result = $this->connectdb->commit();
         } catch (\PDOException $e) {
-            $this->connectdb->rollBack();
+            if ($this->connectdb->inTransaction()) {
+                $this->connectdb->rollBack();
+            }
+
             throw new DatabaseException($e->getMessage(), $e->getCode());
         }
 
