@@ -22,7 +22,7 @@ abstract class DataDeleteModel implements DataDeleteInterface
      *  
      *  @return bool
      */
-    public function deleteSingleData(array $queryArray, array $dataArray)
+    public function deleteSingleData(array $queryArray, array $dataArray): bool
     {
         $result = false;
         try {
@@ -48,7 +48,7 @@ abstract class DataDeleteModel implements DataDeleteInterface
      *  
      *  @return bool
      */
-    public function deleteMultipleData(array $queryArray, array $dataArray)
+    public function deleteMultipleData(array $queryArray, array $dataArray): bool
     {
         $result = false;
         try {

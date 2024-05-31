@@ -22,9 +22,9 @@ abstract class DataReadModel implements DataReadInterface
      *  
      *  @return array
     */
-    public function getSingleData(array $queryArray, array|null $dataArray = null)
+    public function getSingleData(array $queryArray, array|null $dataArray = null): array
     {
-        $result = false;
+        $result = [];
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
             if (isset($dataArray['param'])) {
@@ -32,7 +32,7 @@ abstract class DataReadModel implements DataReadInterface
                 $formats = $queryArray['bind'];
                 $types = DBUtil::getPDOType($formats, $params);
                 foreach ($params as $index => $param) {
-                    $stmt->bindValue($index + 1, $params[$index], $types[$index]);
+                    $stmt->bindValue($index + 1, $param, $types[$index]);
                 }
             }
             $stmt->execute();
@@ -41,7 +41,7 @@ abstract class DataReadModel implements DataReadInterface
             throw new DatabaseException($e->getMessage(), $e->getCode());
         }
 
-        return $result;
+        return $result ? $result : [];
     }
 
     /**
@@ -51,9 +51,9 @@ abstract class DataReadModel implements DataReadInterface
      *  
      *  @return array
     */
-    public function getMultipleData(array $queryArray, array|null $dataArray = null)
+    public function getMultipleData(array $queryArray, array|null $dataArray = null): array
     {
-        $result = array();
+        $result = [];
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
             if (isset($dataArray['param'])) {
@@ -69,7 +69,7 @@ abstract class DataReadModel implements DataReadInterface
             throw new DatabaseException($e->getMessage(), $e->getCode());
         }
 
-        return !empty($result) ? $result : false;
+        return $result;
     }
 
     /**
@@ -79,9 +79,9 @@ abstract class DataReadModel implements DataReadInterface
      *
      *  @return int
     */
-    public function getDataCount(array $queryArray, array|null $dataArray = null)
+    public function getDataCount(array $queryArray, array|null $dataArray = null): int
     {
-        $result = false;
+        $result = 0;
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
             if (isset($dataArray['param'])) {

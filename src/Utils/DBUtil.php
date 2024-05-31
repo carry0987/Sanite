@@ -29,7 +29,7 @@ class DBUtil
         return $types;
     }
 
-    public static function getParamType(string $param, mixed $value)
+    public static function getParamType(string $param, mixed $value): int
     {
         switch ($param) {
             case 's':

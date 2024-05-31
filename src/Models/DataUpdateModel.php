@@ -22,7 +22,7 @@ abstract class DataUpdateModel implements DataUpdateInterface
      *  
      *  @return bool
      */
-    public function updateSingleData(array $queryArray, array $dataArray)
+    public function updateSingleData(array $queryArray, array $dataArray): bool
     {
         $result = false;
         // Get DB Update
@@ -48,7 +48,7 @@ abstract class DataUpdateModel implements DataUpdateInterface
      *  
      *  @return bool
      */
-    public function updateMultipleData(array $queryArray, array $dataArray)
+    public function updateMultipleData(array $queryArray, array $dataArray): bool
     {
         $result = false;
         //Get DB Update

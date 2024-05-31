@@ -21,9 +21,9 @@ abstract class DataCreateModel implements DataCreateInterface
      *  @param array $dataArray
      *  @param bool $getAutoIncrement
      *  
-     *  @return bool
+     *  @return array|bool
      */
-    public function createSingleData(array $queryArray, array $dataArray, bool $getAutoIncrement = false)
+    public function createSingleData(array $queryArray, array $dataArray, bool $getAutoIncrement = false): array|bool
     {
         $result['execute'] = false;
         if (!isset($queryArray['query'])) return $result;
@@ -52,7 +52,7 @@ abstract class DataCreateModel implements DataCreateInterface
      *  
      *  @return bool
      */
-    public function createMultipleData(array $queryArray, array $dataArray)
+    public function createMultipleData(array $queryArray, array $dataArray): bool
     {
         $result = false;
         //Get DB Create
