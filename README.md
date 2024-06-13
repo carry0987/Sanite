@@ -19,15 +19,17 @@ Use `Sanite` to establish a database connection:
 use carry0987\Sanite\Sanite;
 
 // Database connection settings
-$db_host = 'mariadb';
-$db_name = 'dev_sanite';
-$db_user = 'test_user';
-$db_password = 'test1234';
-$db_charset = 'utf8mb4'; // Optional
-$db_port = 3306; // Optional
+$config = array(
+    'host' => 'mariadb',
+    'database' => 'dev_sanite',
+    'username' => 'test_user',
+    'password' => 'test1234',
+    'port' => 3306, // Optional
+    'charset' => 'utf8mb4' // Optional
+);
 
 // Create a database connection
-$sanite = new Sanite($db_host, $db_name, $db_user, $db_password, $db_charset, $db_port);
+$sanite = new Sanite($config);
 ```
 
 ## Using a Data Model
@@ -50,9 +52,7 @@ class UserModel extends DataReadModel
             'query' => 'SELECT * FROM user WHERE uid = ? LIMIT 1',
             'bind'  => 'i',  // This value needs to be relative when using DBUtil::getPDOType
         ];
-        $dataArray = [
-            'param' => [$userId],
-        ];
+        $dataArray = [$userId];
 
         return $this->getSingleData($queryArray, $dataArray);
     }
