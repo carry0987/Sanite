@@ -1,3 +1,9 @@
-
+# MacOS
 .DS_Store
-/vendor/
+
+# Composer
+/vendor
+
+# PHPUnit
+/.phpunit.cache
+.phpunit.result.cache
