@@ -8,7 +8,7 @@ use carry0987\Sanite\Utils\DBUtil;
 
 abstract class DataDeleteModel implements DataDeleteInterface
 {
-    protected $connectdb;
+    protected \PDO $connectdb;
 
     public function __construct(Sanite $sanite)
     {
