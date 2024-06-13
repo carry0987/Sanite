@@ -11,9 +11,7 @@ class UserModel extends DataReadModel
             'query' => 'SELECT * FROM user WHERE uid = ? LIMIT 1',
             'bind'  => 'i',  // This value needs to be relative when using DBUtil::getPDOType
         ];
-        $dataArray = [
-            'param' => [$userId],
-        ];
+        $dataArray = [$userId];
 
         return $this->getSingleData($queryArray, $dataArray);
     }

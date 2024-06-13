@@ -30,8 +30,8 @@ abstract class DataDeleteModel implements DataDeleteInterface
             $params = $dataArray['param'];
             $formats = $queryArray['bind'];
             $types = DBUtil::getPDOType($formats, $params);
-            foreach ($params as $key => &$val) {
-                $stmt->bindValue($key+1, $val, $types[$key]);
+            foreach ($params as $key => $val) {
+                $stmt->bindValue($key + 1, $val, $types[$key]);
             }
             $result = $stmt->execute();
         } catch(\PDOException $e) {
@@ -58,8 +58,8 @@ abstract class DataDeleteModel implements DataDeleteInterface
             $formats = $queryArray['bind'];
             foreach ($list as $value) {
                 $types = DBUtil::getPDOType($formats, $value);
-                foreach ($value as $subKey => $subValue) {
-                    $stmt->bindValue($subKey+1, $value[$subKey], $types[$subKey]);
+                foreach (array_keys($value) as $subKey) {
+                    $stmt->bindValue($subKey + 1, $value[$subKey], $types[$subKey]);
                 }
                 $stmt->execute();
             }

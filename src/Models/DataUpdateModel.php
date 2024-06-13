@@ -31,7 +31,7 @@ abstract class DataUpdateModel implements DataUpdateInterface
             $stmt = $this->connectdb->prepare($queryArray['query']);
             $types = DBUtil::getPDOType($queryArray['bind'], $dataArray);
             foreach ($dataArray as $i => $value) {
-                $stmt->bindValue($i+1, $value, $types[$i]);
+                $stmt->bindValue($i + 1, $value, $types[$i]);
             }
             $result = $stmt->execute();
         } catch (\PDOException $e) {
@@ -56,10 +56,10 @@ abstract class DataUpdateModel implements DataUpdateInterface
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
             $this->connectdb->beginTransaction();
-            foreach ($dataArray as $key => $value) {
+            foreach ($dataArray as $value) {
                 $bind_params = DBUtil::getPDOType($queryArray['bind'], $value);
                 foreach ($bind_params as $i => $type) {
-                    $stmt->bindValue($i+1, $value[$i], $type);
+                    $stmt->bindValue($i + 1, $value[$i], $type);
                 }
                 $stmt->execute();
             }

@@ -32,7 +32,7 @@ abstract class DataCreateModel implements DataCreateInterface
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
             foreach ($dataArray as $index => $value) {
-                $stmt->bindValue($index+1, $value, $paramTypes[$index]);
+                $stmt->bindValue($index + 1, $value, $paramTypes[$index]);
             }
             $result['execute'] = $stmt->execute();
             if ($result['execute']) {
@@ -59,10 +59,10 @@ abstract class DataCreateModel implements DataCreateInterface
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
             $this->connectdb->beginTransaction();
-            foreach ($dataArray as $key => $value) {
+            foreach ($dataArray as $value) {
                 $types = DBUtil::getPDOType($queryArray['bind'], $value);
                 foreach ($value as $k => $v) {
-                    $stmt->bindValue($k+1, $v, $types[$k]);
+                    $stmt->bindValue($k + 1, $v, $types[$k]);
                 }
                 $stmt->execute();
             }

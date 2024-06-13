@@ -27,11 +27,9 @@ abstract class DataReadModel implements DataReadInterface
         $result = [];
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
-            if (isset($dataArray['param'])) {
-                $params = $dataArray['param'];
-                $formats = $queryArray['bind'];
-                $types = DBUtil::getPDOType($formats, $params);
-                foreach ($params as $index => $param) {
+            if (isset($dataArray)) {
+                $types = DBUtil::getPDOType($queryArray['bind'], $dataArray);
+                foreach ($dataArray as $index => $param) {
                     $stmt->bindValue($index + 1, $param, $types[$index]);
                 }
             }
@@ -56,11 +54,10 @@ abstract class DataReadModel implements DataReadInterface
         $result = [];
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
-            if (isset($dataArray['param'])) {
-                $types = DBUtil::getPDOType($queryArray['bind'], $dataArray['param']);
-                if (!is_array($dataArray['param'])) $dataArray['param'] = array($dataArray['param']);
-                foreach ($dataArray['param'] as $index => $param) {
-                    $stmt->bindValue($index+1, $param, $types[$index]);
+            if (isset($dataArray)) {
+                $types = DBUtil::getPDOType($queryArray['bind'], $dataArray);
+                foreach ($dataArray as $index => $param) {
+                    $stmt->bindValue($index + 1, $param, $types[$index]);
                 }
             }
             $stmt->execute();
@@ -84,10 +81,10 @@ abstract class DataReadModel implements DataReadInterface
         $result = 0;
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
-            if (isset($dataArray['param'])) {
-                $types = DBUtil::getPDOType($queryArray['bind'], $dataArray['param']);
-                foreach ($dataArray['param'] as $index => &$param) {
-                    $stmt->bindValue($index+1, $param, $types[$index]);
+            if (isset($dataArray)) {
+                $types = DBUtil::getPDOType($queryArray['bind'], $dataArray);
+                foreach ($dataArray as $index => $param) {
+                    $stmt->bindValue($index + 1, $param, $types[$index]);
                 }
             }
             $stmt->execute();
