@@ -17,8 +17,8 @@ class Sanite
             }
             if (is_array($dbConfig)) {
                 // Get config
-                [$host, $name, $username, $password, $charset, $db_port] = self::setConfig($dbConfig);
-                $this->connectdb = new PDO(self::buildDSN('mysql', $host, $name, $charset, $db_port), $username, $password);
+                [$host, $database, $username, $password, $charset, $db_port] = self::setConfig($dbConfig);
+                $this->connectdb = new PDO(self::buildDSN('mysql', $host, $database, $charset, $db_port), $username, $password);
             }
             $this->connectdb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             self::$version = $this->connectdb->getAttribute(PDO::ATTR_SERVER_VERSION);
@@ -30,13 +30,13 @@ class Sanite
     private static function setConfig(array $dbConfig): array
     {
         $host = $dbConfig['host'] ?? '127.0.0.1';
-        $name = $dbConfig['database'] ?? '';
+        $database = $dbConfig['database'] ?? '';
         $username = $dbConfig['username'] ?? '';
         $password = $dbConfig['password'] ?? '';
         $charset = $dbConfig['charset'] ?? 'utf8mb4';
         $port = $dbConfig['port'] ?? 3306;
 
-        return [$host, $name, $username, $password, $charset, $port];
+        return [$host, $database, $username, $password, $charset, $port];
     }
 
     private static function buildDSN(string $db_type, string $db_host, string $db_name, string $charset, int $db_port): string
