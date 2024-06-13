@@ -6,7 +6,7 @@
         "php": ">=8.0"
     },
     "require-dev": {
-        "php": ">=8.0"
+        "phpunit/phpunit": "^11.2"
     },
     "license": "MIT",
     "autoload": {
@@ -16,7 +16,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "carry0987\\Sanite\\Example\\": "example/class/"
+            "carry0987\\Sanite\\Example\\": "example/class/",
+            "carry0987\\Sanite\\Tests\\": "tests/"
         }
     },
     "authors": [
