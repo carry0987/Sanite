@@ -36,7 +36,7 @@ abstract class DataCreateModel implements DataCreateInterface
             }
             $result['execute'] = $stmt->execute();
             if ($result['execute']) {
-                $result['auto_increment'] = $this->connectdb->lastInsertId();
+                $result['auto_increment'] = (int) $this->connectdb->lastInsertId();
             }
         } catch (\PDOException $e) {
             throw new DatabaseException($e->getMessage(), $e->getCode());

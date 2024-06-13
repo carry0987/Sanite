@@ -27,10 +27,8 @@ abstract class DataDeleteModel implements DataDeleteInterface
         $result = false;
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
-            $params = $dataArray['param'];
-            $formats = $queryArray['bind'];
-            $types = DBUtil::getPDOType($formats, $params);
-            foreach ($params as $key => $val) {
+            $types = DBUtil::getPDOType($queryArray['bind'], $dataArray);
+            foreach ($dataArray as $key => $val) {
                 $stmt->bindValue($key + 1, $val, $types[$key]);
             }
             $result = $stmt->execute();
@@ -54,10 +52,8 @@ abstract class DataDeleteModel implements DataDeleteInterface
         try {
             $this->connectdb->beginTransaction();
             $stmt = $this->connectdb->prepare($queryArray['query']);
-            $list = $dataArray['list'];
-            $formats = $queryArray['bind'];
-            foreach ($list as $value) {
-                $types = DBUtil::getPDOType($formats, $value);
+            foreach ($dataArray as $value) {
+                $types = DBUtil::getPDOType($queryArray['bind'], $value);
                 foreach (array_keys($value) as $subKey) {
                     $stmt->bindValue($subKey + 1, $value[$subKey], $types[$subKey]);
                 }
