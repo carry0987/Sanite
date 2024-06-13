@@ -6,7 +6,7 @@ use PDO;
 
 class Sanite
 {
-    private PDO $connectdb = null;
+    private PDO $connectdb;
     private static string $version = null;
 
     public function __construct(array|PDO $dbConfig)
