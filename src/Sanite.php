@@ -6,13 +6,20 @@ use PDO;
 
 class Sanite
 {
-    private $connectdb = null;
-    private static $version;
+    private PDO $connectdb = null;
+    private static string $version = null;
 
-    public function __construct(string $db_host, string $db_name, string $username, string $password, string $charset = 'utf8mb4', int $db_port = 3306)
+    public function __construct(array|PDO $dbConfig)
     {
         try {
-            $this->connectdb = new PDO(self::buildDSN('mysql', $db_host, $db_name, $charset, $db_port), $username, $password);
+            if ($dbConfig instanceof PDO) {
+                $this->connectdb = $dbConfig;
+            }
+            if (is_array($dbConfig)) {
+                // Get config
+                [$host, $name, $username, $password, $charset, $db_port] = self::setConfig($dbConfig);
+                $this->connectdb = new PDO(self::buildDSN('mysql', $host, $name, $charset, $db_port), $username, $password);
+            }
             $this->connectdb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             self::$version = $this->connectdb->getAttribute(PDO::ATTR_SERVER_VERSION);
         } catch (\PDOException $e) {
@@ -20,7 +27,19 @@ class Sanite
         }
     }
 
-    private static function buildDSN(string $db_type, string $db_host, string $db_name, string $charset, int $db_port)
+    private static function setConfig(array $dbConfig): array
+    {
+        $host = $dbConfig['host'] ?? '127.0.0.1';
+        $name = $dbConfig['database'] ?? '';
+        $username = $dbConfig['username'] ?? '';
+        $password = $dbConfig['password'] ?? '';
+        $charset = $dbConfig['charset'] ?? 'utf8mb4';
+        $port = $dbConfig['port'] ?? 3306;
+
+        return [$host, $name, $username, $password, $charset, $port];
+    }
+
+    private static function buildDSN(string $db_type, string $db_host, string $db_name, string $charset, int $db_port): string
     {
         $dsn = $db_type.':host='.$db_host.';dbname='.$db_name;
         if (!empty($charset)) {
@@ -34,13 +53,17 @@ class Sanite
     }
 
     // Get PDO connection
-    public function getConnection()
+    public function getConnection(): PDO
     {
+        if (empty($this->connectdb)) {
+            throw new DatabaseException('Database connection is empty');
+        }
+
         return $this->connectdb;
     }
 
-    public static function getPDOVersion()
+    public static function getPDOVersion(): string
     {
-        return self::$version;
+        return self::$version ?? 'Unknown';
     }
 }

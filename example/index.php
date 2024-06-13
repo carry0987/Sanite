@@ -4,15 +4,17 @@ require dirname(__DIR__).'/vendor/autoload.php';
 use carry0987\Sanite\Sanite;
 use carry0987\Sanite\Example\UserModel;
 
-$db_host = 'mariadb';
-$db_name = 'dev_sanite';
-$db_user = 'test_user';
-$db_password = 'test1234';
-$db_charset = 'utf8mb4';
-$db_port = 3306;
+$config = array(
+    'host' => 'mariadb',
+    'port' => 3306,
+    'database' => 'dev_sanite',
+    'username' => 'test_user',
+    'password' => 'test1234',
+    'charset' => 'utf8mb4',
+);
 
 try {
-    $sanite = new Sanite($db_host, $db_name, $db_user, $db_password, $db_charset, $db_port);
+    $sanite = new Sanite($config);
     $userModel = new UserModel($sanite);
     $user = $userModel->getUserById(1);
     echo '<pre>';
