@@ -17,8 +17,8 @@ class Sanite
             }
             if (is_array($dbConfig)) {
                 // Get config
-                [$host, $database, $username, $password, $charset, $db_port] = self::setConfig($dbConfig);
-                $this->connectdb = new PDO(self::buildDSN('mysql', $host, $database, $charset, $db_port), $username, $password);
+                [$driver, $host, $database, $username, $password, $charset, $db_port] = self::setConfig($dbConfig);
+                $this->connectdb = new PDO(self::buildDSN($driver, $host, $database, $charset, $db_port), $username, $password);
             }
             $this->connectdb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             self::$version = $this->connectdb->getAttribute(PDO::ATTR_SERVER_VERSION);
@@ -29,6 +29,7 @@ class Sanite
 
     private static function setConfig(array $dbConfig): array
     {
+        $driver = $dbConfig['driver'] ?? 'mysql';
         $host = $dbConfig['host'] ?? '127.0.0.1';
         $database = $dbConfig['database'] ?? '';
         $username = $dbConfig['username'] ?? '';
@@ -36,12 +37,12 @@ class Sanite
         $charset = $dbConfig['charset'] ?? 'utf8mb4';
         $port = $dbConfig['port'] ?? 3306;
 
-        return [$host, $database, $username, $password, $charset, $port];
+        return [$driver, $host, $database, $username, $password, $charset, $port];
     }
 
-    private static function buildDSN(string $db_type, string $db_host, string $db_name, string $charset, int $db_port): string
+    private static function buildDSN(string $driver, string $db_host, string $db_name, string $charset, int $db_port): string
     {
-        $dsn = $db_type.':host='.$db_host.';dbname='.$db_name;
+        $dsn = $driver.':host='.$db_host.';dbname='.$db_name;
         if (!empty($charset)) {
             $dsn .= ';charset='.$charset;
         }
