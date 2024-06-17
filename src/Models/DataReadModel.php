@@ -95,4 +95,28 @@ abstract class DataReadModel implements DataReadInterface
 
         return $result;
     }
+
+    /**
+     *  Get single row of data, alias of getSingleData
+     *  @param array $queryArray
+     *  @param array|null $dataArray
+     *
+     *  @return array
+    */
+    public function readSingleData(array $queryArray, array|null $dataArray = null): array
+    {
+        return $this->getSingleData($queryArray, $dataArray);
+    }
+
+    /**
+     *  Get multiple row of data, alias of getMultipleData
+     *  @param array $queryArray
+     *  @param array|null $dataArray
+     *
+     *  @return array
+    */
+    public function readMultipleData(array $queryArray, array|null $dataArray = null): array
+    {
+        return $this->getMultipleData($queryArray, $dataArray);
+    }
 }
