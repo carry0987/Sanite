@@ -10,9 +10,9 @@ abstract class DataDeleteModel implements DataDeleteInterface
 {
     protected \PDO $connectdb;
 
-    public function __construct(Sanite $sanite)
+    public function __construct(Sanite|\PDO $db)
     {
-        $this->connectdb = $sanite->getConnection();
+        $this->connectdb = $db instanceof Sanite ? $db->getConnection() : $db;
     }
 
     /**
