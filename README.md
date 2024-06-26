@@ -1,6 +1,6 @@
 # Sanite
 [![Packgist](https://img.shields.io/packagist/v/carry0987/sanite.svg?style=flat-square)](https://packagist.org/packages/carry0987/sanite) 
-![CI](https://github.com/carry0987/Sanite/actions/workflows/php.yml/badge.svg)  
+![CI](https://github.com/carry0987/Sanite/actions/workflows/php-unit.yml/badge.svg)  
 Sanite is a PHP library that provide base CRUD structure and methods, using PDO.
 
 ## Getting Started
