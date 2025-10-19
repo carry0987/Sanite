@@ -14,13 +14,18 @@ class Sanite
         try {
             if ($dbConfig instanceof PDO) {
                 $this->connectdb = $dbConfig;
-            }
-            if (is_array($dbConfig)) {
+            } else {
                 // Get config
                 [$driver, $host, $database, $username, $password, $charset, $db_port] = self::setConfig($dbConfig);
                 $this->connectdb = new PDO(self::buildDSN($driver, $host, $database, $charset, $db_port), $username, $password);
             }
+
+            // Set attributes
             $this->connectdb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->connectdb->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $this->connectdb->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+            // Get version
             self::$version = $this->connectdb->getAttribute(PDO::ATTR_SERVER_VERSION);
         } catch (\PDOException $e) {
             throw new DatabaseException($e->getMessage(), $e->getCode());
