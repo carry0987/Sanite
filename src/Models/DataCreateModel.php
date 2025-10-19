@@ -28,7 +28,7 @@ abstract class DataCreateModel implements DataCreateInterface
         $result['execute'] = false;
         if (!isset($queryArray['query'])) return $result;
         $paramTypes = DBUtil::getPDOType($queryArray['bind'], $dataArray);
-        //Get DB Create
+        // Get DB Create
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
             foreach ($dataArray as $index => $value) {
@@ -55,7 +55,7 @@ abstract class DataCreateModel implements DataCreateInterface
     public function createMultipleData(array $queryArray, array $dataArray): bool
     {
         $result = false;
-        //Get DB Create
+        // Get DB Create
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
             $this->connectdb->beginTransaction();

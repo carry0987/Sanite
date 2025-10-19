@@ -32,16 +32,18 @@ class DBUtil
     public static function getParamType(string $param, mixed $value): int
     {
         switch ($param) {
-            case 's':
-                $type = is_null($value) ? PDO::PARAM_NULL : PDO::PARAM_STR;
-                break;
-            case 'i':
-                $type = is_null($value) ? PDO::PARAM_NULL : PDO::PARAM_INT;
-                break;
+            case 's': // string
+                return is_null($value) ? PDO::PARAM_NULL : PDO::PARAM_STR;
+            case 'i': // integer
+                return is_null($value) ? PDO::PARAM_NULL : PDO::PARAM_INT;
+            case 'b': // boolean
+                return is_null($value) ? PDO::PARAM_NULL : PDO::PARAM_BOOL;
+            case 'j': // Pass string; json_encode first in application layer
+                return is_null($value) ? PDO::PARAM_NULL : PDO::PARAM_STR;
+            case 'n': // explicit null
+                return PDO::PARAM_NULL;
             default:
                 throw new UtilsException('Unsupported format type');
         }
-
-        return $type;
     }
 }

@@ -51,7 +51,7 @@ abstract class DataUpdateModel implements DataUpdateInterface
     public function updateMultipleData(array $queryArray, array $dataArray): bool
     {
         $result = false;
-        //Get DB Update
+        // Get DB Update
         if (!isset($queryArray['query'])) return $result;
         try {
             $stmt = $this->connectdb->prepare($queryArray['query']);
