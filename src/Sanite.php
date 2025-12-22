@@ -18,6 +18,11 @@ class Sanite
                 // Get config
                 [$driver, $host, $database, $username, $password, $charset, $db_port] = self::setConfig($dbConfig);
                 $this->connectdb = new PDO(self::buildDSN($driver, $host, $database, $charset, $db_port), $username, $password);
+
+                // Set charset for PostgreSQL
+                if ($driver === 'pgsql' && !empty($charset)) {
+                    $this->connectdb->exec("SET client_encoding TO '{$charset}'");
+                }
             }
 
             // Set attributes
@@ -39,18 +44,47 @@ class Sanite
         $database = $dbConfig['database'] ?? '';
         $username = $dbConfig['username'] ?? '';
         $password = $dbConfig['password'] ?? '';
-        $charset = $dbConfig['charset'] ?? 'utf8mb4';
-        $port = $dbConfig['port'] ?? 3306;
+
+        // Set default port and charset based on driver
+        $defaultPort = match ($driver) {
+            'pgsql' => 5432,
+            default => 3306,
+        };
+        $defaultCharset = match ($driver) {
+            'pgsql' => 'utf8',
+            default => 'utf8mb4',
+        };
+
+        $charset = $dbConfig['charset'] ?? $defaultCharset;
+        $port = $dbConfig['port'] ?? $defaultPort;
 
         return [$driver, $host, $database, $username, $password, $charset, $port];
     }
 
     private static function buildDSN(string $driver, string $db_host, string $db_name, string $charset, int $db_port): string
     {
+        return match ($driver) {
+            'pgsql' => self::buildPostgreSQLDSN($db_host, $db_name, $db_port),
+            default => self::buildMySQLDSN($driver, $db_host, $db_name, $charset, $db_port),
+        };
+    }
+
+    private static function buildMySQLDSN(string $driver, string $db_host, string $db_name, string $charset, int $db_port): string
+    {
         $dsn = $driver.':host='.$db_host.';dbname='.$db_name;
         if (!empty($charset)) {
             $dsn .= ';charset='.$charset;
         }
+        if (!empty($db_port)) {
+            $dsn .= ';port='.$db_port;
+        }
+
+        return $dsn;
+    }
+
+    private static function buildPostgreSQLDSN(string $db_host, string $db_name, int $db_port): string
+    {
+        $dsn = 'pgsql:host='.$db_host.';dbname='.$db_name;
         if (!empty($db_port)) {
             $dsn .= ';port='.$db_port;
         }

@@ -20,10 +20,11 @@ abstract class DataCreateModel implements DataCreateInterface
      *  @param array $queryArray
      *  @param array $dataArray
      *  @param bool $getAutoIncrement
+     *  @param string|null $sequenceName Sequence name for PostgreSQL (e.g., 'table_id_seq')
      *  
      *  @return array|bool
      */
-    public function createSingleData(array $queryArray, array $dataArray, bool $getAutoIncrement = false): array|bool
+    public function createSingleData(array $queryArray, array $dataArray, bool $getAutoIncrement = false, ?string $sequenceName = null): array|bool
     {
         $result['execute'] = false;
         if (!isset($queryArray['query'])) return $result;
@@ -36,7 +37,7 @@ abstract class DataCreateModel implements DataCreateInterface
             }
             $result['execute'] = $stmt->execute();
             if ($result['execute']) {
-                $result['auto_increment'] = (int) $this->connectdb->lastInsertId();
+                $result['auto_increment'] = (int) $this->connectdb->lastInsertId($sequenceName);
             }
         } catch (\PDOException $e) {
             throw new DatabaseException($e->getMessage(), $e->getCode());
