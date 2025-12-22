@@ -6,17 +6,24 @@ use PDO;
 
 class Sanite
 {
+    // Database driver constants
+    public const DRIVER_MYSQL = 'mysql';
+    public const DRIVER_PGSQL = 'pgsql';
+
     private ?PDO $connectdb = null;
     private static ?string $version = null;
+    private string $driver;
 
     public function __construct(array|PDO $dbConfig)
     {
         try {
             if ($dbConfig instanceof PDO) {
                 $this->connectdb = $dbConfig;
+                $this->driver = $this->connectdb->getAttribute(PDO::ATTR_DRIVER_NAME);
             } else {
                 // Get config
                 [$driver, $host, $database, $username, $password, $charset, $db_port] = self::setConfig($dbConfig);
+                $this->driver = $driver;
                 $this->connectdb = new PDO(self::buildDSN($driver, $host, $database, $charset, $db_port), $username, $password);
 
                 // Set charset for PostgreSQL
@@ -100,6 +107,36 @@ class Sanite
         }
 
         return $this->connectdb;
+    }
+
+    /**
+     * Get the current database driver name
+     * 
+     * @return string One of DRIVER_* constants
+     */
+    public function getDriver(): string
+    {
+        return $this->driver;
+    }
+
+    /**
+     * Check if the current driver is PostgreSQL
+     * 
+     * @return bool
+     */
+    public function isPostgreSQL(): bool
+    {
+        return $this->driver === self::DRIVER_PGSQL;
+    }
+
+    /**
+     * Check if the current driver is MySQL/MariaDB
+     * 
+     * @return bool
+     */
+    public function isMySQL(): bool
+    {
+        return $this->driver === self::DRIVER_MYSQL;
     }
 
     public static function getPDOVersion(): string
