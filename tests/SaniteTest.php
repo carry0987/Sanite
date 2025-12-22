@@ -126,10 +126,15 @@ class SaniteTest extends TestCase
             ->method('setAttribute')
             ->willReturn(true);
 
-        $pdoMock->expects($this->once())
+        $pdoMock->expects($this->exactly(2))
             ->method('getAttribute')
-            ->with(PDO::ATTR_SERVER_VERSION)
-            ->willReturn('8.0.0');
+            ->willReturnCallback(function ($attribute) {
+                return match ($attribute) {
+                    PDO::ATTR_DRIVER_NAME => 'mysql',
+                    PDO::ATTR_SERVER_VERSION => '8.0.0',
+                    default => null,
+                };
+            });
 
         $sanite = new Sanite($pdoMock);
 
@@ -148,8 +153,13 @@ class SaniteTest extends TestCase
 
         $pdoMock->method('setAttribute')->willReturn(true);
         $pdoMock->method('getAttribute')
-            ->with(PDO::ATTR_SERVER_VERSION)
-            ->willReturn('15.0');
+            ->willReturnCallback(function ($attribute) {
+                return match ($attribute) {
+                    PDO::ATTR_DRIVER_NAME => 'mysql',
+                    PDO::ATTR_SERVER_VERSION => '15.0',
+                    default => null,
+                };
+            });
 
         new Sanite($pdoMock);
 
