@@ -43,12 +43,32 @@ class DataCreateModelTest extends TestCase
         $stmtMock->expects($this->once())->method('execute')->willReturn(true);
 
         $this->pdoMock->expects($this->once())->method('prepare')->with($queryArray['query'])->willReturn($stmtMock);
-        $this->pdoMock->expects($this->once())->method('lastInsertId')->willReturn('1');
+        $this->pdoMock->expects($this->once())->method('lastInsertId')->with(null)->willReturn('1');
 
         $result = $this->dataCreateModel->createSingleData($queryArray, $dataArray, true);
 
         $this->assertTrue($result['execute']);
         $this->assertSame(1, $result['auto_increment']);
+    }
+
+    public function testCreateSingleDataWithSequenceName()
+    {
+        $queryArray = ['query' => 'INSERT INTO users (username) VALUES ($1) RETURNING id', 'bind' => 's'];
+        $dataArray = ['testuser'];
+        $sequenceName = 'users_id_seq';
+
+        $stmtMock = $this->getMockBuilder(\PDOStatement::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $stmtMock->expects($this->once())->method('execute')->willReturn(true);
+
+        $this->pdoMock->expects($this->once())->method('prepare')->with($queryArray['query'])->willReturn($stmtMock);
+        $this->pdoMock->expects($this->once())->method('lastInsertId')->with($sequenceName)->willReturn('42');
+
+        $result = $this->dataCreateModel->createSingleData($queryArray, $dataArray, true, $sequenceName);
+
+        $this->assertTrue($result['execute']);
+        $this->assertSame(42, $result['auto_increment']);
     }
 
     public function testCreateSingleDataThrowsException()
