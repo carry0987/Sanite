@@ -3,7 +3,7 @@ namespace carry0987\Sanite\Exceptions;
 
 class UtilsException extends \Exception
 {
-    private $errorInfo;
+    private mixed $errorInfo;
 
     // Override constructor to pass error information
     public function __construct(string $message, mixed $code = 0, mixed $errorInfo = [])
