@@ -35,7 +35,7 @@ abstract class DataUpdateModel implements DataUpdateInterface
             }
             $result = $stmt->execute();
         } catch (\PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
 
         return $result;
@@ -69,7 +69,7 @@ abstract class DataUpdateModel implements DataUpdateInterface
                 $this->connectdb->rollBack();
             }
 
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
 
         return $result;

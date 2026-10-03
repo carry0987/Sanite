@@ -36,7 +36,7 @@ abstract class DataReadModel implements DataReadInterface
             $stmt->execute();
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
 
         return $result ? $result : [];
@@ -63,7 +63,7 @@ abstract class DataReadModel implements DataReadInterface
             $stmt->execute();
             $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
 
         return $result;
@@ -90,7 +90,7 @@ abstract class DataReadModel implements DataReadInterface
             $stmt->execute();
             $result = $stmt->fetchColumn();
         } catch (\PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
 
         return $result;

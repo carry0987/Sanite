@@ -1,8 +1,8 @@
 <?php
 namespace carry0987\Sanite\Tests;
 
-use carry0987\Sanite\Sanite;
 use carry0987\Sanite\Exceptions\DatabaseException;
+use carry0987\Sanite\Sanite;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -103,14 +103,12 @@ class SaniteTest extends TestCase
         $this->assertSame('pgsql:host=localhost;dbname=testdb;port=5432', $dsn);
     }
 
-    /**
-     * Test MariaDB DSN building (should use MySQL format)
-     */
-    public function testMariaDBDSNBuilding()
+    public function testUnsupportedDriverThrowsException()
     {
-        $dsn = $this->invokeBuildDSN('mariadb', 'localhost', 'testdb', 'utf8mb4', 3306);
+        $this->expectException(DatabaseException::class);
+        $this->expectExceptionMessage('Unsupported database driver: mariadb');
 
-        $this->assertSame('mariadb:host=localhost;dbname=testdb;charset=utf8mb4;port=3306', $dsn);
+        $this->invokeSetConfig(['driver' => 'mariadb']);
     }
 
     /**
@@ -173,7 +171,6 @@ class SaniteTest extends TestCase
     {
         $reflection = new ReflectionClass(Sanite::class);
         $method = $reflection->getMethod('setConfig');
-        $method->setAccessible(true);
 
         return $method->invoke(null, $config);
     }
@@ -185,7 +182,6 @@ class SaniteTest extends TestCase
     {
         $reflection = new ReflectionClass(Sanite::class);
         $method = $reflection->getMethod('buildDSN');
-        $method->setAccessible(true);
 
         return $method->invoke(null, $driver, $host, $database, $charset, $port);
     }

@@ -33,7 +33,7 @@ abstract class DataDeleteModel implements DataDeleteInterface
             }
             $result = $stmt->execute();
         } catch(\PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
 
         return $result;
@@ -65,7 +65,7 @@ abstract class DataDeleteModel implements DataDeleteInterface
                 $this->connectdb->rollBack();
             }
 
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
 
         return $result;

@@ -36,14 +36,42 @@ abstract class DataCreateModel implements DataCreateInterface
                 $stmt->bindValue($index + 1, $value, $paramTypes[$index]);
             }
             $result['execute'] = $stmt->execute();
-            if ($result['execute']) {
+            if ($result['execute'] && $getAutoIncrement) {
                 $result['auto_increment'] = (int) $this->connectdb->lastInsertId($sequenceName);
             }
         } catch (\PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
 
         return $getAutoIncrement ? $result : $result['execute'];
+    }
+
+    /**
+     * Execute an INSERT statement with a RETURNING clause
+     *
+     * @param array $queryArray
+     * @param array $dataArray
+     *
+     * @return array
+     */
+    public function createSingleReturning(array $queryArray, array $dataArray): array
+    {
+        if (!isset($queryArray['query'])) return [];
+
+        try {
+            $stmt = $this->connectdb->prepare($queryArray['query']);
+            $paramTypes = DBUtil::getPDOType($queryArray['bind'], $dataArray);
+            foreach ($dataArray as $index => $value) {
+                $stmt->bindValue($index + 1, $value, $paramTypes[$index]);
+            }
+            if (!$stmt->execute()) return [];
+
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            throw DatabaseException::fromPDOException($e);
+        }
+
+        return $result ?: [];
     }
 
     /**
@@ -73,7 +101,7 @@ abstract class DataCreateModel implements DataCreateInterface
                 $this->connectdb->rollBack();
             }
 
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
 
         return $result;

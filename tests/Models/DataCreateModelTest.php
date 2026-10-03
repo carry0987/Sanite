@@ -71,6 +71,62 @@ class DataCreateModelTest extends TestCase
         $this->assertSame(42, $result['auto_increment']);
     }
 
+    public function testCreateSingleDataWithoutAutoIncrementDoesNotRequestId()
+    {
+        $queryArray = ['query' => 'INSERT INTO users (username) VALUES (?)', 'bind' => 's'];
+        $dataArray = ['testuser'];
+
+        $stmtMock = $this->getMockBuilder(\PDOStatement::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $stmtMock->expects($this->once())->method('execute')->willReturn(true);
+
+        $this->pdoMock->expects($this->once())->method('prepare')->with($queryArray['query'])->willReturn($stmtMock);
+        $this->pdoMock->expects($this->never())->method('lastInsertId');
+
+        $this->assertTrue($this->dataCreateModel->createSingleData($queryArray, $dataArray));
+    }
+
+    public function testCreateSingleReturning()
+    {
+        $queryArray = ['query' => 'INSERT INTO users (username) VALUES (?) RETURNING id, username', 'bind' => 's'];
+        $dataArray = ['testuser'];
+        $returnedRow = ['id' => 42, 'username' => 'testuser'];
+
+        $stmtMock = $this->getMockBuilder(\PDOStatement::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $stmtMock->expects($this->once())->method('execute')->willReturn(true);
+        $stmtMock->expects($this->once())->method('fetch')->with(PDO::FETCH_ASSOC)->willReturn($returnedRow);
+
+        $this->pdoMock->expects($this->once())->method('prepare')->with($queryArray['query'])->willReturn($stmtMock);
+        $this->pdoMock->expects($this->never())->method('lastInsertId');
+
+        $this->assertSame($returnedRow, $this->dataCreateModel->createSingleReturning($queryArray, $dataArray));
+    }
+
+    public function testDatabaseExceptionPreservesPDOErrorInfo()
+    {
+        $queryArray = ['query' => 'INSERT INTO users (username) VALUES (?)', 'bind' => 's'];
+        $dataArray = ['duplicate'];
+        $pdoException = new \PDOException('Unique violation');
+        $pdoException->errorInfo = ['23505', 7, 'duplicate key value'];
+
+        $stmtMock = $this->getMockBuilder(\PDOStatement::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $stmtMock->method('execute')->willThrowException($pdoException);
+        $this->pdoMock->method('prepare')->willReturn($stmtMock);
+
+        try {
+            $this->dataCreateModel->createSingleData($queryArray, $dataArray);
+            $this->fail('Expected DatabaseException was not thrown');
+        } catch (DatabaseException $exception) {
+            $this->assertSame($pdoException->errorInfo, $exception->getErrorInfo());
+            $this->assertSame($pdoException, $exception->getPrevious());
+        }
+    }
+
     public function testCreateSingleDataThrowsException()
     {
         $queryArray = ['query' => 'INSERT INTO users (username) VALUES (?)', 'bind' => 's'];

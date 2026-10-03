@@ -12,14 +12,53 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        driver: [mysql, pgsql]
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: sanite_test
+          MYSQL_USER: sanite
+          MYSQL_PASSWORD: sanite
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: sanite_test
+          POSTGRES_USER: sanite
+          POSTGRES_PASSWORD: sanite
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U sanite -d sanite_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      SANITE_TEST_DRIVER: ${{ matrix.driver }}
+      SANITE_TEST_HOST: 127.0.0.1
+      SANITE_TEST_DATABASE: sanite_test
+      SANITE_TEST_USERNAME: sanite
+      SANITE_TEST_PASSWORD: sanite
+      SANITE_TEST_PORT: ${{ matrix.driver == 'pgsql' && '5432' || '3306' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         id: setup-php
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
+          extensions: pdo_mysql, pdo_pgsql
           tools: composer:v2
 
       - name: Print PHP version
@@ -30,10 +69,10 @@ jobs:
 
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-php-${{ matrix.driver }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
 

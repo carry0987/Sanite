@@ -4,7 +4,12 @@
 Sanite is a PHP library that provide base CRUD structure and methods, using PDO.
 
 ## Getting Started
-Make sure you have `Sanite` installed. If not, you can install it with the following command:
+Sanite requires PHP 8.0 or later and PDO. Enable the PDO extension for the database you use:
+
+- MySQL or MariaDB: `pdo_mysql`
+- PostgreSQL: `pdo_pgsql`
+
+Install Sanite with Composer:
 
 ```bash
 composer require carry0987/sanite
@@ -19,8 +24,9 @@ Use `Sanite` to establish a database connection:
 ```php
 use carry0987\Sanite\Sanite;
 
-// Database connection settings
+// MySQL or MariaDB connection settings
 $config = array(
+    'driver' => 'mysql', // Optional; mysql is the default
     'host' => 'mariadb',
     'database' => 'dev_sanite',
     'username' => 'test_user',
@@ -32,6 +38,26 @@ $config = array(
 // Create a database connection
 $sanite = new Sanite($config);
 ```
+
+Only the `mysql` and `pgsql` driver values are accepted. MariaDB uses the `mysql` driver.
+
+For PostgreSQL, set the driver to `pgsql`. The default port is `5432` and the default client encoding is `utf8`:
+
+```php
+$config = [
+    'driver' => 'pgsql',
+    'host' => 'postgres',
+    'database' => 'dev_sanite',
+    'username' => 'test_user',
+    'password' => 'test1234',
+    // 'port' => 5432,
+    // 'charset' => 'utf8',
+];
+
+$sanite = new Sanite($config);
+```
+
+PostgreSQL applies `client_encoding` to the current connection session. A new connection receives its own session setting.
 
 ## Using a Data Model
 
@@ -85,6 +111,36 @@ print_r($user);
 print_r($users);
 ```
 
+## Insert IDs and PostgreSQL RETURNING
+
+`createSingleData()` only calls PDO's `lastInsertId()` when its third argument is `true`. PostgreSQL sequence lookup belongs to the current connection session; pass the sequence name explicitly when an ID is required:
+
+```php
+$result = $userModel->createSingleData(
+    [
+        'query' => 'INSERT INTO users (username) VALUES (?)',
+        'bind' => 's',
+    ],
+    ['alice'],
+    true,
+    'users_id_seq'
+);
+
+$userId = $result['auto_increment'];
+```
+
+For PostgreSQL `RETURNING`, use `createSingleReturning()`. Sanite does not add or translate SQL clauses; the caller chooses the fields to return:
+
+```php
+$user = $userModel->createSingleReturning(
+    [
+        'query' => 'INSERT INTO users (username) VALUES (?) RETURNING id, username',
+        'bind' => 's',
+    ],
+    ['alice']
+);
+```
+
 ## Exception Handling
 
 `Sanite` defines a specific exception class `DatabaseException`. Capture and handle it appropriately in your code:
@@ -93,7 +149,8 @@ print_r($users);
 try {
     // ... attempt some database operations ...
 } catch (\carry0987\Sanite\Exceptions\DatabaseException $e) {
-    // ... handle database exception ...
+    // Includes the PDO driver error details, such as PostgreSQL SQLSTATE 23505.
+    $errorInfo = $e->getErrorInfo();
     echo "Error: " . $e->getMessage();
 }
 ```

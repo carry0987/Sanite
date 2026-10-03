@@ -28,7 +28,11 @@ class Sanite
 
                 // Set charset for PostgreSQL
                 if ($driver === 'pgsql' && !empty($charset)) {
-                    $this->connectdb->exec("SET client_encoding TO '{$charset}'");
+                    $quotedCharset = $this->connectdb->quote($charset);
+                    if ($quotedCharset === false) {
+                        throw new DatabaseException('Unable to quote PostgreSQL client encoding');
+                    }
+                    $this->connectdb->exec("SET client_encoding TO {$quotedCharset}");
                 }
             }
 
@@ -40,13 +44,17 @@ class Sanite
             // Get version
             self::$version = $this->connectdb->getAttribute(PDO::ATTR_SERVER_VERSION);
         } catch (\PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
+            throw DatabaseException::fromPDOException($e);
         }
     }
 
     private static function setConfig(array $dbConfig): array
     {
         $driver = $dbConfig['driver'] ?? 'mysql';
+        if (!in_array($driver, [self::DRIVER_MYSQL, self::DRIVER_PGSQL], true)) {
+            throw new DatabaseException("Unsupported database driver: {$driver}");
+        }
+
         $host = $dbConfig['host'] ?? '127.0.0.1';
         $database = $dbConfig['database'] ?? '';
         $username = $dbConfig['username'] ?? '';
